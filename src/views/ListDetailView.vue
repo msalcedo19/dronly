@@ -106,12 +106,32 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArrowLeft, Plus } from '@element-plus/icons-vue'
+import { ArrowLeft } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const groupByPharmacy = ref(false)
 
-const items = ref([
+interface Product {
+  id: number;
+  productName: string;
+  productDesc: string;
+  lab: string;
+  price: number;
+  pharmacy?: string;
+  underline?: boolean;
+  discount: number;
+  distance?: number;
+}
+
+interface PharmacyGroup {
+  id: number;
+  name: string;
+  underline: boolean;
+  total: number;
+  products: Product[];
+}
+
+const items = ref<Product[]>([
   {
     id: 1,
     productName: 'Lipitor Tabletas Recubiertas 40 mg',
@@ -134,7 +154,7 @@ const items = ref([
   }
 ])
 
-const pharmacyGroups = ref([
+const pharmacyGroups = ref<PharmacyGroup[]>([
   {
     id: 1,
     name: 'Cruz Verde',

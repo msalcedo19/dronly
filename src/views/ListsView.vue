@@ -54,7 +54,6 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Delete, ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
 interface Pharmacy {

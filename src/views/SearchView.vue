@@ -90,10 +90,6 @@ const goToResults = () => {
   }
 }
 
-const addToList = (product: Product) => {
-  // TODO: Implement add to list functionality
-  console.log('Adding to list:', product)
-}
 </script>
 
 <style scoped>

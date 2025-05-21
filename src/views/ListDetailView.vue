@@ -7,16 +7,18 @@
       <span class="list-detail-title">DETALLE DE LISTA</span>
     </div>
     <div class="list-detail-filters">
-      <el-button class="filter-btn" round>Genérico</el-button>
+      <el-button class="filter-btn" round @click="toggleGeneric">{{ isGeneric ? 'Nombre Comercial' : 'Genérico' }}</el-button>
     </div>
       <el-button class="add-product-btn" type="info" plain icon="Plus" round>
         Agrega otro producto
       </el-button>
       <el-card class="savings-summary">
-        <span>AHORRO hasta de <span class="savings-amount">$ 81.000</span></span>
+        <span>AHORRO hasta de <span class="savings-amount">$ 60.000</span></span>
       </el-card>
       <div class="compare-all-row">
-        <span class="compare-all-link" @click="groupByPharmacy = true"><span class="compare-all-underline">Compara tu lista en todas las farmacias</span></span>
+        <span class="compare-all-link" @click="groupByPharmacy = !groupByPharmacy">
+          <span class="compare-all-underline">{{ groupByPharmacy ? 'Ver lista individual' : 'Compara tu lista en todas las farmacias' }}</span>
+        </span>
       </div>
       <template v-if="!groupByPharmacy">
         <div class="list-table">
@@ -30,7 +32,7 @@
           <div v-for="(item, idx) in items" :key="item.id" class="list-table-row">
             <span class="col-index">{{ idx + 1 }}</span>
             <div class="col-product">
-              <span class="product-name">{{ item.productName }}</span>
+              <span class="product-name">{{ isGeneric ? item.genericName : item.comercialName }}</span>
               <span class="product-desc">
                 {{ item.productDesc }}
               </span>
@@ -39,7 +41,7 @@
             <span class="col-price">
               <template v-if="item.discount">
                 <div class="price-stack">
-                  <span class="original-price">${{ (item.price / (1 - item.discount/100)).toLocaleString() }}</span>
+                  <div class="original-price" v-if="item.discount">${{ Math.floor(item.price / (1 - item.discount/100)).toLocaleString() }}</div>
                   <span class="discounted-price">${{ item.price.toLocaleString() }}</span>
                   <span class="discount-label">{{ item.discount }}% OFF</span>
                 </div>
@@ -64,39 +66,34 @@
               <span class="pharmacy-stars">★★★★★</span>
             </div>
             <div class="list-table-header">
-            <span class="col-index"> </span>
-            <span class="col-product">Productos</span>
-            <span class="col-price">Precio</span>
-            <span class="col-pharmacy">Farmacia</span>
-            <span class="col-link"></span>
-          </div>
-          <div v-for="(item, idx) in pharmacy.products" :key="item.id" class="list-table-row">
-            <span class="col-index">{{ idx + 1 }}</span>
-            <div class="col-product">
-              <span class="product-name">{{ item.productName }}</span>
-              <span class="product-desc">
-                {{ item.productDesc }}
-              </span>
-              <span class="product-lab">{{ item.lab }}</span>
+              <span class="col-index"> </span>
+              <span class="col-product">Productos</span>
+              <span class="col-price">Precio</span>
+              <span class="col-link"></span>
             </div>
-            <span class="col-price">
-              <template v-if="item.discount">
-                <div class="price-stack">
-                  <span class="original-price">${{ (item.price / (1 - item.discount/100)).toLocaleString() }}</span>
+            <div v-for="(item, idx) in pharmacy.products" :key="item.id" class="list-table-row">
+              <span class="col-index">{{ idx + 1 }}</span>
+              <div class="col-product">
+                <span class="product-name">{{ isGeneric ? item.genericName : item.comercialName }}</span>
+                <span class="product-desc">
+                  {{ item.productDesc }}
+                </span>
+                <span class="product-lab">{{ item.lab }}</span>
+              </div>
+              <span class="col-price">
+                <template v-if="item.discount">
+                  <div class="price-stack">
+                    <div class="original-price" v-if="item.discount">${{ Math.floor(item.price / (1 - item.discount/100)).toLocaleString() }}</div>
+                    <span class="discounted-price">${{ item.price.toLocaleString() }}</span>
+                    <span class="discount-label">{{ item.discount }}% OFF</span>
+                  </div>
+                </template>
+                <template v-else>
                   <span class="discounted-price">${{ item.price.toLocaleString() }}</span>
-                  <span class="discount-label">{{ item.discount }}% OFF</span>
-                </div>
-              </template>
-              <template v-else>
-                <span class="discounted-price">${{ item.price.toLocaleString() }}</span>
-              </template>
-            </span>
-            <div class="col-pharmacy">
-              <span class="pharmacy-name" :class="{ underline: item.underline }">{{ item.pharmacy }}</span>
-              <span class="pharmacy-stars">★★★★★</span>
+                </template>
+              </span>
+              <a class="col-link list-site-link" href="#">Ir al sitio</a>
             </div>
-            <a class="col-link list-site-link" href="#">Ir al sitio</a>
-          </div>
           </div>
         </div>
       </template>
@@ -110,6 +107,7 @@ import { ArrowLeft } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const groupByPharmacy = ref(false)
+const isGeneric = ref(false)
 
 interface Product {
   id: number;
@@ -121,6 +119,8 @@ interface Product {
   underline?: boolean;
   discount: number;
   distance?: number;
+  genericName: string;
+  comercialName: string;
 }
 
 interface PharmacyGroup {
@@ -140,7 +140,9 @@ const items = ref<Product[]>([
     price: 190000,
     pharmacy: 'Cruz Verde',
     underline: false,
-    discount: 24
+    discount: 24,
+    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
   },
   {
     id: 2,
@@ -149,8 +151,10 @@ const items = ref<Product[]>([
     lab: 'SANOFI',
     price: 51000,
     pharmacy: 'Farmatodo',
-    underline: true,
-    discount: 0
+    underline: false,
+    discount: 0,
+    genericName: 'Fexofenadina 30 mg 5 ml Suspensión oral',
+    comercialName: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral'
   }
 ])
 
@@ -168,7 +172,9 @@ const pharmacyGroups = ref<PharmacyGroup[]>([
         lab: 'PFIZER',
         price: 190000,
         distance: 0.5,
-        discount: 24
+        discount: 24,
+        genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
+        comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
       },
       {
         id: 2,
@@ -177,14 +183,16 @@ const pharmacyGroups = ref<PharmacyGroup[]>([
         lab: 'SANOFI',
         price: 64000,
         distance: 0.5,
-        discount: 0
+        discount: 0,
+        genericName: 'Fexofenadina 30 mg 5 ml Suspensión oral',
+        comercialName: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral'
       }
     ]
   },
   {
     id: 2,
     name: 'Farmatodo',
-    underline: true,
+    underline: false,
     total: 279000,
     products: [
       {
@@ -194,16 +202,20 @@ const pharmacyGroups = ref<PharmacyGroup[]>([
         lab: 'PFIZER',
         price: 200000,
         distance: 0.8,
-        discount: 10
+        discount: 10,
+        genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
+        comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
       },
       {
         id: 2,
         productName: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral',
         productDesc: '',
         lab: 'SANOFI',
-        price: 79000,
+        price: 51000,
         distance: 0.8,
-        discount: 0
+        discount: 0,
+        genericName: 'Fexofenadina 30 mg 5 ml Suspensión oral',
+        comercialName: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral'
       }
     ]
   }
@@ -211,6 +223,10 @@ const pharmacyGroups = ref<PharmacyGroup[]>([
 
 function goBack() {
   router.back()
+}
+
+function toggleGeneric() {
+  isGeneric.value = !isGeneric.value
 }
 </script>
 

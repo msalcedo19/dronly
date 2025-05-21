@@ -84,7 +84,7 @@ const loading = ref(false)
 const lists = ref<List[]>([
   {
     id: '1',
-    name: 'Mi Lista Principal',
+    name: 'Lista de Productos',
     savings: 81000,
     items: [
       {
@@ -92,11 +92,6 @@ const lists = ref<List[]>([
         product: { id: '1', name: 'Lipitor Tabletas Recubiertas 40 mg' },
         pharmacy: { id: '1', name: 'Cruz Verde', price: 190000 }
       },
-      {
-        id: '2',
-        product: { id: '2', name: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral' },
-        pharmacy: { id: '2', name: 'Farmatodo', price: 51000 }
-      }
     ]
   },
   {

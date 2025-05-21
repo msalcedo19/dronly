@@ -7,7 +7,7 @@
       <span class="compare-title">COMPARA PRECIOS</span>
     </div>
     <div class="compare-filters">
-      <el-button class="filter-btn" round>Genérico</el-button>
+      <el-button class="filter-btn" round @click="toggleGeneric">{{ isGeneric ? 'Nombre Comercial' : 'Genérico' }}</el-button>
     </div>
     <el-input
       v-model="searchQuery"
@@ -21,7 +21,7 @@
     <div class="compare-summary-row">
       <el-card class="compare-product-card">
         <div class="pharmacy-label">PFIZER.</div>
-        <div class="compare-product-name">Lipitor Tabletas Recubiertas 40 mg</div>
+        <div class="compare-product-name">{{ isGeneric ? pharmacies[0].genericName : pharmacies[0].comercialName }}</div>
         <div class="compare-product-desc">Caja x 30</div>
       </el-card>
       <el-card class="compare-price-card">
@@ -47,10 +47,10 @@
         </div>
         <div class="compare-pharmacy-distance">{{ pharmacy.distance }} Km</div>
         <div class="compare-price-info">
-          <div class="original-price">${{ (pharmacy.price).toLocaleString() }}</div>
+          <div class="original-price">${{ (pharmacy.price * (1 + pharmacy.discount / 100)).toLocaleString() }}</div>
           <div class="compare-pharmacy-price">${{ pharmacy.price.toLocaleString() }}</div>
           <div class="discount">
-            <span class="discount-label">24% OFF</span>
+            <span class="discount-label" v-if="pharmacy.discount > 0">{{ pharmacy.discount }}% OFF</span>
           </div>
         </div>
       </div>
@@ -78,20 +78,81 @@ import { ArrowLeft, List } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const searchQuery = ref('Lipitor')
+const isGeneric = ref(false)
 
-const pharmacies = ref([
-  { id: 1, name: 'Cruz Verde', distance: 0.5, price: 190000, underline: false, stars: 5 },
-  { id: 2, name: 'Drogas la Rebaja', distance: 0.1, price: 238000, underline: false, stars: 4 },
-  { id: 3, name: 'Farmatodo', distance: 1.5, price: 249000, underline: true, stars: 3 },
-  { id: 4, name: 'Droguería Comfandi', distance: 2.0, price: 251000, underline: true, stars: 2 },
-  { id: 5, name: 'Droguería Olimpica', distance: 2.5, price: 251000, underline: true, stars: 1 },
+interface Product {
+  id: number;
+  name: string;
+  distance: number;
+  price: number;
+  underline: boolean;
+  stars: number;
+  discount: number;
+  genericName: string;
+  comercialName: string;
+}
+
+const pharmacies = ref<Product[]>([
+  { 
+    id: 1, 
+    name: 'Cruz Verde', 
+    distance: 0.5, 
+    price: 190000, 
+    underline: false, 
+    stars: 5, 
+    discount: 24,
+    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
+  },
+  { 
+    id: 2, 
+    name: 'Drogas la Rebaja', 
+    distance: 0.1, 
+    price: 238000, 
+    underline: false, 
+    stars: 5, 
+    discount: 0,
+    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
+  },
+  { 
+    id: 3, 
+    name: 'Farmatodo', 
+    distance: 1.5, 
+    price: 249000, 
+    underline: true, 
+    stars: 5, 
+    discount: 10,
+    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
+  },
+  { 
+    id: 4, 
+    name: 'Droguería Comfandi', 
+    distance: 2.0, 
+    price: 251000, 
+    underline: true, 
+    stars: 5, 
+    discount: 5,
+    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
+  },
+  { 
+    id: 5, 
+    name: 'Droguería Olimpica', 
+    distance: 2.5, 
+    price: 201000, 
+    underline: true, 
+    stars: 5, 
+    discount: 15,
+    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
+  },
 ])
 
 const listsModalVisible = ref(false)
 const lists = ref([
-  { id: 1, name: 'Mi Lista Principal' },
-  { id: 2, name: 'Para mi familia' },
-  { id: 3, name: 'Viaje' }
+  { id: 1, name: 'Lista de Productos' },
 ])
 
 function goBack() {
@@ -111,6 +172,11 @@ function showListsModal() {
 function goToList(list: { id: number, name: string }) {
   listsModalVisible.value = false
   router.push({ name: 'list-detail', params: { id: list.id } })
+}
+
+function toggleGeneric() {
+  isGeneric.value = !isGeneric.value
+  searchQuery.value = isGeneric.value ? 'Astorvastatina' : 'Lipitor'
 }
 </script>
 

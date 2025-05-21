@@ -1,6 +1,6 @@
 <template>
   <div class="app-bg">
-    <nav class="navbar">
+    <nav class="navbar" v-if="route.path !== '/login'">
       <div class="navbar-left">
         <router-link to="/" class="nav-btn" aria-label="Home">
           <el-icon><HomeFilled /></el-icon>
@@ -13,7 +13,7 @@
         </router-link>
       </div>
     </nav>
-    <main class="main-centered">
+    <main :class="['main-centered', { 'no-padding': route.path === '/login' }]">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
@@ -25,6 +25,9 @@
 
 <script setup lang="ts">
 import { HomeFilled, List } from '@element-plus/icons-vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 </script>
 
 <style scoped>
@@ -75,6 +78,10 @@ import { HomeFilled, List } from '@element-plus/icons-vue'
   align-items: center;
   padding-top: 56px;
   min-height: calc(100vh - 56px);
+}
+.no-padding {
+  padding-top: 0 !important;
+  min-height: 100vh;
 }
 .fade-enter-active,
 .fade-leave-active {

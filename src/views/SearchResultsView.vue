@@ -7,7 +7,7 @@
       <span class="results-title">{{ searchTerm }}</span>
     </div>
     <div class="results-filters">
-      <el-button class="filter-btn" round>Genérico</el-button>
+      <el-button class="filter-btn" round @click="toggleGeneric">{{ isGeneric ? 'Nombre Comercial' : 'Genérico' }}</el-button>
       <el-button class="filter-btn" round>% Des. Max</el-button>
     </div>
     <div class="results-subtitle">
@@ -16,9 +16,11 @@
     <div class="results-list">
       <div v-for="result in results" :key="result.id" class="result-row">
         <el-card class="result-product" @click="goToProduct(result)">
-          <div class="product-img">IMAGEN</div>
+          <div class="product-img">
+            <img :src="getProductImage(result.id)" :alt="result.productName" class="product-image" />
+          </div>
           <div class="product-info">
-            <div class="product-name">{{ result.productName }}</div>
+            <div class="product-name">{{ isGeneric ? result.genericName : result.comercialName }}</div>
             <div class="product-desc">{{ result.productDesc }}</div>
           </div>
         </el-card>
@@ -26,7 +28,7 @@
           <div class="pharmacy-name">{{ result.pharmacy }}</div>
           <div class="price-row">
             <div class="price-info">
-              <div class="original-price" v-if="result.discount">${{ (result.price / (1 - result.discount/100)).toLocaleString() }}</div>
+              <div class="original-price" v-if="result.discount">${{ Math.floor(result.price / (1 - result.discount/100)).toLocaleString() }}</div>
               <div class="price">${{ result.price.toLocaleString() }}</div>
               <div class="discount" v-if="result.discount">
                 <span class="discount-label">{{ result.discount }}% OFF</span>
@@ -45,6 +47,11 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft } from '@element-plus/icons-vue'
 
+import img40mg from '@/assets/images/lipitor-40mg.jpg'
+import img10mg from '@/assets/images/lipitor-10mg.jpg'
+import img20mg from '@/assets/images/lipitor-20mg.jpg'
+import img80mg from '@/assets/images/lipitor-80mg.jpg'
+
 interface SearchResult {
   id: string
   productName: string
@@ -53,11 +60,18 @@ interface SearchResult {
   discount: number | null
   price: number
   pum: number
+  genericName: string
+  comercialName: string
+}
+
+interface ProductImages {
+  [key: string]: string;
 }
 
 const route = useRoute()
 const router = useRouter()
 const searchTerm = computed(() => route.query.q as string || '')
+const isGeneric = ref(false)
 
 const results = ref<SearchResult[]>([
   {
@@ -67,7 +81,9 @@ const results = ref<SearchResult[]>([
     pharmacy: 'PFIZER.',
     discount: 24,
     price: 190000,
-    pum: 6333
+    pum: 6333,
+    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
   },
   {
     id: '2',
@@ -76,7 +92,9 @@ const results = ref<SearchResult[]>([
     pharmacy: 'PFIZER.',
     discount: 18,
     price: 105000,
-    pum: 6333
+    pum: 6333,
+    genericName: 'Astorvastatina Tabletas Recubiertas 10 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 10 mg'
   },
   {
     id: '3',
@@ -85,7 +103,9 @@ const results = ref<SearchResult[]>([
     pharmacy: 'PFIZER.',
     discount: 21,
     price: 110000,
-    pum: 6333
+    pum: 6333,
+    genericName: 'Astorvastatina Tabletas Recubiertas 20 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 20 mg'
   },
   {
     id: '4',
@@ -94,9 +114,22 @@ const results = ref<SearchResult[]>([
     pharmacy: 'PFIZER.',
     discount: 23,
     price: 320000,
-    pum: 6333
+    pum: 6333,
+    genericName: 'Astorvastatina Tabletas Recubiertas 80 mg',
+    comercialName: 'Lipitor Tabletas Recubiertas 80 mg'
   }
 ])
+
+const productImages: ProductImages = {
+  '1': img40mg,
+  '2': img10mg,
+  '3': img20mg,
+  '4': img80mg
+}
+
+function getProductImage(id: string): string {
+  return productImages[id] || ''
+}
 
 function goBack() {
   router.push({ name: 'search' })
@@ -104,6 +137,10 @@ function goBack() {
 
 function goToProduct(result: SearchResult) {
   router.push({ name: 'product-compare', params: { id: result.id } })
+}
+
+function toggleGeneric() {
+  isGeneric.value = !isGeneric.value
 }
 </script>
 
@@ -238,6 +275,14 @@ function goToProduct(result: SearchResult) {
   align-items: center;
   justify-content: center;
   margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: white;
 }
 
 .product-name {

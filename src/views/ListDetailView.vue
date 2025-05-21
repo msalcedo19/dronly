@@ -4,12 +4,12 @@
       <el-button class="back-btn" text @click="goBack">
         <el-icon><ArrowLeft /></el-icon>
       </el-button>
-      <span class="list-detail-title">DETALLE DE LISTA</span>
+      <span class="list-detail-title">Mi Lista de Productos</span>
     </div>
     <div class="list-detail-filters">
       <el-button class="filter-btn" round @click="toggleGeneric">{{ isGeneric ? 'Nombre Comercial' : 'Genérico' }}</el-button>
     </div>
-      <el-button class="add-product-btn" type="info" plain icon="Plus" round>
+      <el-button class="add-product-btn" type="info" plain icon="Plus" round @click="goToSearch">
         Agrega otro producto
       </el-button>
       <el-card class="savings-summary">
@@ -227,6 +227,10 @@ function goBack() {
 
 function toggleGeneric() {
   isGeneric.value = !isGeneric.value
+}
+
+function goToSearch() {
+  router.push({ name: 'search' })
 }
 </script>
 

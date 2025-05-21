@@ -1,5 +1,6 @@
 <template>
-  <div class="search-container">
+  <div class="search-mobile-preview-bg">
+    <div class="mobile-preview">
       <!-- Welcome Message -->
       <div class="welcome-message">
         <h1 class="welcome-title">Encuentra los mejores precios</h1>
@@ -20,10 +21,11 @@
 
       <!-- Ad/Promo Area -->
       <el-card class="ad-card">
-        <div class="ad-content">
-          <el-icon class="ad-icon"><Promotion /></el-icon>
-          <span class="ad-text">Espacio para Publicidad de Farmacias o productos</span>
-        </div>
+        <el-carousel height="350px" indicator-position="outside" :interval="3000" autoplay>
+          <el-carousel-item v-for="(img, idx) in promoImages" :key="idx">
+            <img :src="img" class="promo-img" />
+          </el-carousel-item>
+        </el-carousel>
       </el-card>
 
       <!-- Pilares de Bienestar -->
@@ -42,12 +44,13 @@
         </el-button>
       </div>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Promotion, Dish, User, Apple } from '@element-plus/icons-vue'
+import { Dish, User, Apple } from '@element-plus/icons-vue'
 
 interface Product {
   id: string
@@ -60,6 +63,13 @@ const searchQuery = ref('')
 const router = useRouter()
 const loading = ref(false)
 const products = ref<Product[]>([])
+
+const promoImages = [
+  'https://lh3.googleusercontent.com/TLRCNnbZfh4Qwofc2-UwoH8WL7UjxsAxVI5A0LFP_RD3L3T_N6zboQP5KEjqcVNW40K7n4Di5lgVyhLQ4M0873WSuNOGGEQLHoWVchhKrPtEkmGu=s1350-rw',
+  'https://lh3.googleusercontent.com/nP0wIhSVvRMKTec2kpyLH_mtL0qezQ063RQCZvFIWNNYxaJZP1hR0Bl9iZlc5RzFR3twsn5sXWTtt1tEP4LIoavdD_V_E8kqsZWC3Y_PfbFpd4d_=s1350-rw',
+  'https://lh3.googleusercontent.com/itsO0HC4_JKdrlQ3cugmp_QdLfUYCo3lRF52uL6D2ng-oX_30o9gREzxGwtbTuDMjtntvTU9aSR0y_Q6igcXjsClyf7dC5mNmNnZCs4XQ-ohWM_K=s1350-rw',
+  'https://lh3.googleusercontent.com/UUcWlfdBFmAIllvF40EyAVKHXlrEzg-WTKQm8y_tVXB2tSSVvzagiEF96GQjpZ0nuLTMLoouKSg-iAUbkSHoG8F3wN5u4wd7ab-npgT0sqixT6K9=s1350-rw'
+]
 
 const handleSearch = () => {
   // TODO: Implement search logic with API
@@ -93,9 +103,28 @@ const goToResults = () => {
 </script>
 
 <style scoped>
+.search-mobile-preview-bg {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: #f3f4f6;
+  padding: 24px 0;
+}
+
+.mobile-preview {
+  width: 740px;
+  background: #f9fafb;
+  border-radius: 24px;
+  box-shadow: 0 4px 24px 0 rgba(34,51,108,0.10);
+  padding: 24px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .search-container {
   width: 100%;
-  max-width: 840px;
+  max-width: 680px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -103,14 +132,13 @@ const goToResults = () => {
 
 .welcome-message {
   text-align: center;
-  margin-bottom: 8px;
 }
 
 .welcome-title {
+  margin: 0px;
   color: #22336c;
   font-size: 2.2rem;
   font-weight: 800;
-  margin-bottom: 8px;
   letter-spacing: -0.5px;
 }
 
@@ -118,42 +146,13 @@ const goToResults = () => {
   color: #64748b;
   font-size: 1.1rem;
   font-weight: 500;
+  margin: 12px
 }
 
 .search-input {
   border-radius: 999px;
   box-shadow: 0 2px 8px 0 rgba(34, 51, 108, 0.06);
   background: #fff;
-}
-
-.ad-card {
-  border: 2px dashed #06b6d4;
-  background: #ecfeff;
-  border-radius: 18px;
-  min-height: 320px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 0;
-}
-
-.ad-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.ad-icon {
-  color: #06b6d4;
-  font-size: 2rem;
-}
-
-.ad-text {
-  color: #334155;
-  font-size: 1.1rem;
-  font-weight: 500;
-  text-align: center;
 }
 
 .wellness-card {
@@ -189,6 +188,31 @@ const goToResults = () => {
   justify-content: center;
   gap: 6px;
   box-shadow: 0 2px 8px 0 rgba(6, 182, 212, 0.08);
+}
+
+.ad-card {
+  background: #ecfeff;
+  border-radius: 18px;
+  padding: 0;
+}
+
+.ad-card .el-card__body {
+  height: 100%;
+  padding: 0;
+  display: flex;
+}
+
+.el-carousel,
+.el-carousel__container {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.promo-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  display: block;
 }
 </style>
 

@@ -103,11 +103,19 @@ const goToResults = () => {
 
 <style scoped>
 .search-mobile-preview-bg {
-  width: 100%;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: center;
   background: #f3f4f6;
-  padding: 24px 0;
+  overflow: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
 
 .mobile-preview {
@@ -119,6 +127,9 @@ const goToResults = () => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin: 0;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .search-container {

@@ -41,7 +41,7 @@
             <span class="col-price">
               <template v-if="item.discount">
                 <div class="price-stack">
-                  <div class="original-price" v-if="item.discount">${{ Math.floor(item.price / (1 - item.discount/100)).toLocaleString() }}</div>
+                  <div class="original-price" v-if="item.discount">${{ Math.round(Math.floor(item.price / (1 - item.discount/100))/100)*100 }}</div>
                   <span class="discounted-price">${{ item.price.toLocaleString() }}</span>
                   <span class="discount-label">{{ item.discount }}% OFF</span>
                 </div>
@@ -83,7 +83,7 @@
               <span class="col-price">
                 <template v-if="item.discount">
                   <div class="price-stack">
-                    <div class="original-price" v-if="item.discount">${{ Math.floor(item.price / (1 - item.discount/100)).toLocaleString() }}</div>
+                    <div class="original-price" v-if="item.discount">${{ Math.round(Math.floor(item.price / (1 - item.discount/100))/100)*100 }}</div>
                     <span class="discounted-price">${{ item.price.toLocaleString() }}</span>
                     <span class="discount-label">{{ item.discount }}% OFF</span>
                   </div>
@@ -149,10 +149,10 @@ const items = ref<Product[]>([
     productName: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral',
     productDesc: '',
     lab: 'SANOFI',
-    price: 51000,
+    price: 52000,
     pharmacy: 'Farmatodo',
     underline: false,
-    discount: 0,
+    discount: 4,
     genericName: 'Fexofenadina 30 mg 5 ml Suspensión oral',
     comercialName: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral'
   }
@@ -183,7 +183,7 @@ const pharmacyGroups = ref<PharmacyGroup[]>([
         lab: 'SANOFI',
         price: 64000,
         distance: 0.5,
-        discount: 0,
+        discount: 7,
         genericName: 'Fexofenadina 30 mg 5 ml Suspensión oral',
         comercialName: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral'
       }
@@ -200,7 +200,7 @@ const pharmacyGroups = ref<PharmacyGroup[]>([
         productName: 'Lipitor Tabletas Recubiertas 40 mg',
         productDesc: 'Caja x 30',
         lab: 'PFIZER',
-        price: 200000,
+        price: 210000,
         distance: 0.8,
         discount: 10,
         genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
@@ -211,9 +211,9 @@ const pharmacyGroups = ref<PharmacyGroup[]>([
         productName: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral',
         productDesc: '',
         lab: 'SANOFI',
-        price: 51000,
+        price: 52000,
         distance: 0.8,
-        discount: 0,
+        discount: 4,
         genericName: 'Fexofenadina 30 mg 5 ml Suspensión oral',
         comercialName: 'Alegra Pediatrico 30 mg 5 ml Suspensión oral'
       }

@@ -18,22 +18,26 @@
       clearable
       @keyup.enter="searchNewProduct"
     />
-    <div class="compare-summary-row">
+    <div class="compare-summary-row" v-if="product">
       <el-card class="compare-product-card">
-        <div class="pharmacy-label">PFIZER.</div>
-        <div class="compare-product-name">{{ isGeneric ? pharmacies[0].genericName : pharmacies[0].comercialName }}</div>
-        <div class="compare-product-desc">Caja x 30</div>
+        <div class="compare-product-brand">{{ product.brand }}</div>
+        <div class="compare-product-name">{{ product.name }}</div>
+        <div class="compare-product-desc">{{ product.desc }}</div>
       </el-card>
       <el-card class="compare-price-card">
         <div class="price-info">
-          <div class="original-price">$250.000</div>
-          <div class="compare-best-price">$190.000</div>
-          <div class="discount">
-            <span class="discount-label">24% OFF</span>
+          <div class="original-price" v-if="product.oldPrice">${{ product.oldPrice.toLocaleString() }}</div>
+          <div class="compare-best-price">${{ product.price.toLocaleString() }}</div>
+          <div class="discount" v-if="product.discount">
+            <span class="discount-label">{{ product.discount }}% OFF</span>
           </div>
         </div>
         <div class="compare-best-label">Mejor Precio</div>
-        <div class="compare-pum">PUM Tableta a $6.333</div>
+        <div class="compare-pum">{{ product.units }}</div>
+        <div class="compare-delivery">{{ product.delivery }}</div>
+        <div class="compare-rating" v-if="product.rating">
+          ⭐ {{ product.rating }} <span v-if="product.ratingCount">({{ product.ratingCount }})</span>
+        </div>
       </el-card>
     </div>
     <div class="compare-table-header">
@@ -72,13 +76,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, List } from '@element-plus/icons-vue'
+import { allResults, type SearchResult } from './searchResultsData'
 
 const router = useRouter()
+const route = useRoute()
 const searchQuery = ref('Lipitor')
 const isGeneric = ref(false)
+
+const productId = computed(() => route.params.id as string)
+const product = computed((): SearchResult | undefined => allResults.find((p: SearchResult) => p.id === productId.value))
 
 interface Product {
   id: number;
@@ -88,8 +97,6 @@ interface Product {
   underline: boolean;
   stars: number;
   discount: number;
-  genericName: string;
-  comercialName: string;
 }
 
 const pharmacies = ref<Product[]>([
@@ -101,8 +108,6 @@ const pharmacies = ref<Product[]>([
     underline: false, 
     stars: 5, 
     discount: 24,
-    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
-    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
   },
   { 
     id: 2, 
@@ -112,8 +117,6 @@ const pharmacies = ref<Product[]>([
     underline: false, 
     stars: 5, 
     discount: 0,
-    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
-    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
   },
   { 
     id: 3, 
@@ -123,8 +126,6 @@ const pharmacies = ref<Product[]>([
     underline: true, 
     stars: 5, 
     discount: 10,
-    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
-    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
   },
   { 
     id: 4, 
@@ -134,8 +135,6 @@ const pharmacies = ref<Product[]>([
     underline: true, 
     stars: 5, 
     discount: 5,
-    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
-    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
   },
   { 
     id: 5, 
@@ -145,9 +144,7 @@ const pharmacies = ref<Product[]>([
     underline: true, 
     stars: 5, 
     discount: 15,
-    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
-    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
-  },
+    },
 ])
 
 const listsModalVisible = ref(false)
@@ -259,22 +256,31 @@ function toggleGeneric() {
   background: #f8fafc;
   min-width: 240px;
   max-width: 320px;
+  padding: 18px 20px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.pharmacy-label {
+.compare-product-brand {
   font-weight: 700;
   color: #22336c;
   font-size: 1.05rem;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
 }
 .compare-product-name {
-  font-weight: 700;
+  font-weight: 600;
   color: #22336c;
-  font-size: 1.05rem;
-  margin-bottom: 4px;
+  font-size: 1.13rem;
+  margin-bottom: 2px;
+  line-height: 1.25;
 }
 .compare-product-desc {
   color: #64748b;
   font-size: 0.98rem;
+  font-weight: 400;
+  margin-bottom: 0;
+  line-height: 1.2;
 }
 .compare-price-card {
   align-items: flex-start;

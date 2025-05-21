@@ -3,8 +3,7 @@
     <div class="mobile-preview">
       <!-- Welcome Message -->
       <div class="welcome-message">
-        <h1 class="welcome-title">Encuentra los mejores precios</h1>
-        <p class="welcome-subtitle">Compara precios de medicamentos en todas las farmacias</p>
+        <h1 class="welcome-title">Consulta y descubre el mejor precio para tu salud</h1>
       </div>
 
       <!-- Search Bar -->
@@ -65,10 +64,10 @@ const loading = ref(false)
 const products = ref<Product[]>([])
 
 const promoImages = [
-  'https://lh3.googleusercontent.com/TLRCNnbZfh4Qwofc2-UwoH8WL7UjxsAxVI5A0LFP_RD3L3T_N6zboQP5KEjqcVNW40K7n4Di5lgVyhLQ4M0873WSuNOGGEQLHoWVchhKrPtEkmGu=s1350-rw',
-  'https://lh3.googleusercontent.com/nP0wIhSVvRMKTec2kpyLH_mtL0qezQ063RQCZvFIWNNYxaJZP1hR0Bl9iZlc5RzFR3twsn5sXWTtt1tEP4LIoavdD_V_E8kqsZWC3Y_PfbFpd4d_=s1350-rw',
-  'https://lh3.googleusercontent.com/itsO0HC4_JKdrlQ3cugmp_QdLfUYCo3lRF52uL6D2ng-oX_30o9gREzxGwtbTuDMjtntvTU9aSR0y_Q6igcXjsClyf7dC5mNmNnZCs4XQ-ohWM_K=s1350-rw',
-  'https://lh3.googleusercontent.com/UUcWlfdBFmAIllvF40EyAVKHXlrEzg-WTKQm8y_tVXB2tSSVvzagiEF96GQjpZ0nuLTMLoouKSg-iAUbkSHoG8F3wN5u4wd7ab-npgT0sqixT6K9=s1350-rw'
+  new URL('@/assets/images/promo1.jpg', import.meta.url).href,
+  new URL('@/assets/images/promo2.jpg', import.meta.url).href,
+  new URL('@/assets/images/promo3.jpg', import.meta.url).href,
+  new URL('@/assets/images/promo4.jpg', import.meta.url).href
 ]
 
 const handleSearch = () => {
@@ -140,13 +139,6 @@ const goToResults = () => {
   font-size: 2.2rem;
   font-weight: 800;
   letter-spacing: -0.5px;
-}
-
-.welcome-subtitle {
-  color: #64748b;
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin: 12px
 }
 
 .search-input {

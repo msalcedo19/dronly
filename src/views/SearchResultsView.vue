@@ -17,24 +17,29 @@
       <div v-for="result in results" :key="result.id" class="result-row">
         <el-card class="result-product" @click="goToProduct(result)">
           <div class="product-img">
-            <img :src="getProductImage(result.id)" :alt="result.productName" class="product-image" />
+            <img :src="getProductImage(result.image)" :alt="result.name" class="product-image" />
           </div>
           <div class="product-info">
-            <div class="product-name">{{ isGeneric ? result.genericName : result.comercialName }}</div>
-            <div class="product-desc">{{ result.productDesc }}</div>
+            <div class="product-name">{{ result.name }}</div>
+            <div class="product-desc">{{ result.desc }}</div>
+            <div class="product-brand">{{ result.brand }}</div>
           </div>
         </el-card>
         <el-card class="result-price" @click="goToProduct(result)">
-          <div class="pharmacy-name">{{ result.pharmacy }}</div>
+          <div class="pharmacy-name">{{ result.brand }}</div>
           <div class="price-row">
             <div class="price-info">
-              <div class="original-price" v-if="result.discount">${{ Math.floor(result.price / (1 - result.discount/100)).toLocaleString() }}</div>
+              <div class="original-price" v-if="result.oldPrice">${{ result.oldPrice.toLocaleString() }}</div>
               <div class="price">${{ result.price.toLocaleString() }}</div>
               <div class="discount" v-if="result.discount">
                 <span class="discount-label">{{ result.discount }}% OFF</span>
               </div>
             </div>
-            <div class="pum">PUM Tableta a ${{ result.pum }}</div>
+            <div class="pum">{{ result.units }}</div>
+            <div class="delivery">{{ result.delivery }}</div>
+            <div class="rating" v-if="result.rating">
+              ⭐ {{ result.rating }} <span v-if="result.ratingCount">({{ result.ratingCount }})</span>
+            </div>
           </div>
         </el-card>
       </div>
@@ -44,103 +49,33 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { ArrowLeft } from '@element-plus/icons-vue'
 
-import img40mg from '@/assets/images/lipitor-40mg.jpg'
-import img10mg from '@/assets/images/lipitor-10mg.jpg'
-import img20mg from '@/assets/images/lipitor-20mg.jpg'
-import img80mg from '@/assets/images/lipitor-80mg.jpg'
+import { allResults, type SearchResult } from './searchResultsData'
+const placeholderImg = 'https://via.placeholder.com/180x80?text=Imagen+Pronto'
 
-interface SearchResult {
-  id: string
-  productName: string
-  productDesc: string
-  pharmacy: string
-  discount: number | null
-  price: number
-  pum: number
-  genericName: string
-  comercialName: string
-}
-
-interface ProductImages {
-  [key: string]: string;
-}
-
-const route = useRoute()
 const router = useRouter()
-const searchTerm = computed(() => route.query.q as string || '')
-const isGeneric = ref(false)
+const searchTerm = ref<string>('Lipitor')
+const isGeneric = ref<boolean>(false)
 
-const results = ref<SearchResult[]>([
-  {
-    id: '1',
-    productName: 'Lipitor Tabletas Recubiertas 40 mg',
-    productDesc: 'Caja x 30',
-    pharmacy: 'PFIZER.',
-    discount: 24,
-    price: 190000,
-    pum: 6333,
-    genericName: 'Astorvastatina Tabletas Recubiertas 40 mg',
-    comercialName: 'Lipitor Tabletas Recubiertas 40 mg'
-  },
-  {
-    id: '2',
-    productName: 'Lipitor Tabletas Recubiertas 10 mg',
-    productDesc: 'Caja x 30',
-    pharmacy: 'PFIZER.',
-    discount: 18,
-    price: 105000,
-    pum: 6333,
-    genericName: 'Astorvastatina Tabletas Recubiertas 10 mg',
-    comercialName: 'Lipitor Tabletas Recubiertas 10 mg'
-  },
-  {
-    id: '3',
-    productName: 'Lipitor Tabletas Recubiertas 20 mg',
-    productDesc: 'Caja x 30',
-    pharmacy: 'PFIZER.',
-    discount: 21,
-    price: 110000,
-    pum: 6333,
-    genericName: 'Astorvastatina Tabletas Recubiertas 20 mg',
-    comercialName: 'Lipitor Tabletas Recubiertas 20 mg'
-  },
-  {
-    id: '4',
-    productName: 'Lipitor Tabletas Recubiertas 80 mg',
-    productDesc: 'Caja x 30',
-    pharmacy: 'PFIZER.',
-    discount: 23,
-    price: 320000,
-    pum: 6333,
-    genericName: 'Astorvastatina Tabletas Recubiertas 80 mg',
-    comercialName: 'Lipitor Tabletas Recubiertas 80 mg'
-  }
-])
+const results = computed<SearchResult[]>(() => allResults.filter((r: SearchResult) => r.type === (isGeneric.value ? 'generic' : 'commercial')))
 
-const productImages: ProductImages = {
-  '1': img40mg,
-  '2': img10mg,
-  '3': img20mg,
-  '4': img80mg
+function getProductImage(image: string): string {
+  return image || placeholderImg
 }
 
-function getProductImage(id: string): string {
-  return productImages[id] || ''
-}
-
-function goBack() {
+function goBack(): void {
   router.push({ name: 'search' })
 }
 
-function goToProduct(result: SearchResult) {
+function goToProduct(result: SearchResult): void {
   router.push({ name: 'product-compare', params: { id: result.id } })
 }
 
-function toggleGeneric() {
+function toggleGeneric(): void {
   isGeneric.value = !isGeneric.value
+  searchTerm.value = isGeneric.value ? 'Astorvastatina' : 'Lipitor'
 }
 </script>
 
@@ -297,6 +232,12 @@ function toggleGeneric() {
   font-size: 0.98rem;
 }
 
+.product-brand {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
 .result-price {
   align-items: flex-start;
   background: #fff;
@@ -352,6 +293,18 @@ function toggleGeneric() {
 }
 
 .pum {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.delivery {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.rating {
   color: #94a3b8;
   font-size: 0.95rem;
   font-weight: 500;

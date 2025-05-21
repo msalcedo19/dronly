@@ -5,12 +5,10 @@
         <router-link to="/" class="nav-btn" aria-label="Home">
           <el-icon><HomeFilled /></el-icon>
         </router-link>
-        <span class="nav-title">Dronly</span>
+        <span class="nav-title">DRONLY</span>
       </div>
       <div class="navbar-right">
-        <router-link to="/lists" class="nav-btn" aria-label="Lists">
-          <el-icon><List /></el-icon>
-        </router-link>
+        <el-icon class="nav-btn"><User /></el-icon>
       </div>
     </nav>
     <main :class="['main-centered', { 'no-padding': route.path === '/login' }]">
@@ -24,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { HomeFilled, List } from '@element-plus/icons-vue'
+import { HomeFilled, User } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()

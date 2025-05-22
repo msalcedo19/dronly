@@ -14,8 +14,7 @@ export interface SearchResult {
   name: string
   desc: string
   price: number
-  oldPrice?: number
-  discount?: number
+  discount: number
   units?: string
   delivery?: string
   rating?: number
@@ -32,7 +31,6 @@ export const allResults: SearchResult[] = [
     name: 'Atorvastatina 20 Mg Sandoz Caja X 30 Comprimidos',
     desc: '',
     price: 24750,
-    oldPrice: 35000,
     discount: 29,
     units: 'Unidades a $816.67',
     delivery: '35 min.',
@@ -48,7 +46,6 @@ export const allResults: SearchResult[] = [
     name: 'Atorvastatina 20 Mg Genfar Caja X 30 Tabletas',
     desc: '',
     price: 45175,
-    oldPrice: 90350,
     discount: 50,
     units: 'Unidades a $1505.83',
     delivery: '35 min.',
@@ -64,7 +61,6 @@ export const allResults: SearchResult[] = [
     name: 'Atorvastatina 40 Mg Sandoz Caja X 30 Comprimidos',
     desc: '',
     price: 46102,
-    oldPrice: 51800,
     discount: 11,
     units: 'Unidades a $1536.73',
     delivery: '35 min.',
@@ -80,7 +76,6 @@ export const allResults: SearchResult[] = [
     name: 'Lipitor Atorvastatina Cálcica 40 Mg Pfizer Caja X 30 Tabletas',
     desc: '',
     price: 197078,
-    oldPrice: 207458,
     discount: 5,
     units: 'Unidades a $6915.00',
     delivery: '35 min.',
@@ -96,7 +91,6 @@ export const allResults: SearchResult[] = [
     name: 'Lipitor Atorvastatina 20 Mg Pfizer Caja X 30 Tabletas',
     desc: '',
     price: 108870,
-    oldPrice: 114600,
     discount: 5,
     units: 'Unidades a $3820.00',
     delivery: '35 min.',
@@ -112,7 +106,6 @@ export const allResults: SearchResult[] = [
     name: 'Lipitor Atorvastatina 10 Mg Pfizer Caja X 30 Tabletas',
     desc: '',
     price: 103028,
-    oldPrice: 108450,
     discount: 5,
     units: 'Unidades a $3615.00',
     delivery: '35 min.',
@@ -132,6 +125,7 @@ export const allResults: SearchResult[] = [
     delivery: '35 min.',
     rating: 0.0,
     ratingCount: 0,
-    image: img80mg
+    image: img80mg,
+    discount: 0
   }
 ] 

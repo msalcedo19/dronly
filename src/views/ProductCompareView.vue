@@ -6,9 +6,6 @@
       </el-button>
       <span class="compare-title">COMPARA PRECIOS</span>
     </div>
-    <div class="compare-filters">
-      <el-button class="filter-btn" round @click="toggleGeneric">{{ isGeneric ? 'Nombre Comercial' : 'Genérico' }}</el-button>
-    </div>
     <el-input
       v-model="searchQuery"
       placeholder="Buscar nombre de producto"
@@ -26,8 +23,8 @@
       </el-card>
       <el-card class="compare-price-card">
         <div class="price-info">
-          <div class="original-price" v-if="product.oldPrice">${{ product.oldPrice.toLocaleString() }}</div>
-          <div class="compare-best-price">${{ product.price.toLocaleString() }}</div>
+          <div class="original-price" v-if="product.discount && product.discount > 0">${{ product.price.toLocaleString() }}</div>
+          <div class="compare-best-price">${{ (product.price * (1 - product.discount / 100)).toLocaleString() }}</div>
           <div class="discount" v-if="product.discount">
             <span class="discount-label">{{ product.discount }}% OFF</span>
           </div>
@@ -51,8 +48,8 @@
         </div>
         <div class="compare-pharmacy-distance">{{ pharmacy.distance }} Km</div>
         <div class="compare-price-info">
-          <div class="original-price">${{ (pharmacy.price * (1 + pharmacy.discount / 100)).toLocaleString() }}</div>
-          <div class="compare-pharmacy-price">${{ pharmacy.price.toLocaleString() }}</div>
+          <div class="original-price" v-if="pharmacy.discount && pharmacy.discount > 0">${{ pharmacy.price.toLocaleString() }}</div>
+          <div class="compare-pharmacy-price">${{ (pharmacy.price * (1 - pharmacy.discount / 100)).toLocaleString() }}</div>
           <div class="discount">
             <span class="discount-label" v-if="pharmacy.discount > 0">{{ pharmacy.discount }}% OFF</span>
           </div>
@@ -84,7 +81,6 @@ import { allResults, type SearchResult } from './searchResultsData'
 const router = useRouter()
 const route = useRoute()
 const searchQuery = ref('Lipitor')
-const isGeneric = ref(false)
 
 const productId = computed(() => route.params.id as string)
 const product = computed((): SearchResult | undefined => allResults.find((p: SearchResult) => p.id === productId.value))
@@ -99,53 +95,63 @@ interface Product {
   discount: number;
 }
 
-const pharmacies = ref<Product[]>([
-  { 
-    id: 1, 
-    name: 'Cruz Verde', 
-    distance: 0.5, 
-    price: 190000, 
-    underline: false, 
-    stars: 5, 
-    discount: 24,
-  },
-  { 
-    id: 2, 
-    name: 'Drogas la Rebaja', 
-    distance: 0.1, 
-    price: 238000, 
-    underline: false, 
-    stars: 5, 
-    discount: 0,
-  },
-  { 
-    id: 3, 
-    name: 'Farmatodo', 
-    distance: 1.5, 
-    price: 249000, 
-    underline: true, 
-    stars: 5, 
-    discount: 10,
-  },
-  { 
-    id: 4, 
-    name: 'Droguería Comfandi', 
-    distance: 2.0, 
-    price: 251000, 
-    underline: true, 
-    stars: 5, 
-    discount: 5,
-  },
-  { 
-    id: 5, 
-    name: 'Droguería Olimpica', 
-    distance: 2.5, 
-    price: 201000, 
-    underline: true, 
-    stars: 5, 
-    discount: 15,
+const pharmacies = computed(() => {
+  if (!product.value) return [];
+  const basePrice = product.value.price;
+  const baseDiscount = product.value.discount || 0;
+  const mockPharmacies: Product[] = [
+    {
+      id: 1,
+      name: 'Cruz Verde',
+      distance: 0.5,
+      price: basePrice,
+      underline: false,
+      stars: 5,
+      discount: baseDiscount
     },
-])
+    {
+      id: 2,
+      name: 'Drogas la Rebaja',
+      distance: 0.1,
+      price: Math.round(basePrice * 1.2),
+      underline: false,
+      stars: 5,
+      discount: Math.floor(Math.random() * 10)
+    },
+    {
+      id: 3,
+      name: 'Farmatodo',
+      distance: 1.5,
+      price: Math.round(basePrice * 1.3),
+      underline: true,
+      stars: 5,
+      discount: Math.floor(Math.random() * 15)
+    },
+    {
+      id: 4,
+      name: 'Droguería Comfandi',
+      distance: 2.0,
+      price: Math.round(basePrice * 1.4),
+      underline: true,
+      stars: 5,
+      discount: Math.floor(Math.random() * 10)
+    },
+    {
+      id: 5,
+      name: 'Droguería Olimpica',
+      distance: 2.5,
+      price: Math.round(basePrice * 1.5),
+      underline: true,
+      stars: 5,
+      discount: Math.floor(Math.random() * 20)
+    }
+  ];
+  return mockPharmacies.sort((a, b) => {
+    const priceA = a.price * (1 - a.discount / 100);
+    const priceB = b.price * (1 - b.discount / 100);
+    return priceA - priceB;
+  });
+});
 
 const listsModalVisible = ref(false)
 const lists = ref([
@@ -171,10 +177,6 @@ function goToList(list: { id: number, name: string }) {
   router.push({ name: 'list-detail', params: { id: list.id } })
 }
 
-function toggleGeneric() {
-  isGeneric.value = !isGeneric.value
-  searchQuery.value = isGeneric.value ? 'Astorvastatina' : 'Lipitor'
-}
 </script>
 
 <style scoped>
@@ -230,7 +232,7 @@ function toggleGeneric() {
   letter-spacing: 1px;
 }
 .compare-search {
-  margin-top: 120px;
+  margin-top: 80px;
   width: 100%;
   max-width: 600px;
   margin-bottom: 18px;
@@ -392,19 +394,6 @@ function toggleGeneric() {
 .pharmacy-stars {
   margin-top: 0;
   font-size: 1rem;
-}
-.compare-filters {
-  position: fixed;
-  top: 120px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 18px;
-  padding: 12px 0;
-  background: #fff;
-  z-index: 10;
-  box-shadow: 0 2px 8px 0 rgba(34,51,108,0.06);
 }
 .compare-pharmacy-distance {
   color: #64748b;

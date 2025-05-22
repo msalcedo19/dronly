@@ -29,8 +29,8 @@
           <div class="pharmacy-name">{{ result.brand }}</div>
           <div class="price-row">
             <div class="price-info">
-              <div class="original-price" v-if="result.oldPrice">${{ result.oldPrice.toLocaleString() }}</div>
-              <div class="price">${{ result.price.toLocaleString() }}</div>
+              <div class="original-price" v-if="result.discount && result.discount > 0">${{ result.price.toLocaleString() }}</div>
+              <div class="price">${{ (result.price * (1 - result.discount / 100)).toLocaleString() }}</div>
               <div class="discount" v-if="result.discount">
                 <span class="discount-label">{{ result.discount }}% OFF</span>
               </div>
